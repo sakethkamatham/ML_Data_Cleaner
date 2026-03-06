@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ML Data Cleaner</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>ML Data Cleaner</h1>
+      <p>Upload a CSV or Excel file, clean it for ML, and download your train/test splits.</p>
+    </header>
+
+    <!-- Section 1: Upload -->
+    <section class="card" id="section-upload">
+      <h2>1. Upload File</h2>
+      <div class="drop-zone" id="drop-zone">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <p>Drag &amp; drop your file here, or</p>
+        <label class="btn btn-secondary" for="file-input">Browse File</label>
+        <input type="file" id="file-input" accept=".csv,.xlsx,.xls" hidden />
+        <p class="hint">.csv, .xlsx, .xls &mdash; up to 100 MB</p>
+      </div>
+      <div class="file-info hidden" id="file-info">
+        <div class="info-chip" id="info-name"></div>
+        <div class="info-chip" id="info-shape"></div>
+        <div class="info-chip" id="info-cols"></div>
+      </div>
+    </section>
+
+    <!-- Section 2: Configure -->
+    <section class="card hidden" id="section-config">
+      <h2>2. Configure Cleaning</h2>
+      <div class="config-grid">
+
+        <div class="config-item">
+          <label>Test Split Ratio: <strong id="split-label">20%</strong></label>
+          <input type="range" id="split-ratio" min="10" max="40" value="20" step="5" />
+          <div class="range-labels"><span>10%</span><span>40%</span></div>
+        </div>
+
+        <div class="config-item">
+          <label>Missing Column Threshold: <strong id="missing-label">50%</strong></label>
+          <input type="range" id="missing-threshold" min="10" max="90" value="50" step="10" />
+          <div class="range-labels"><span>10%</span><span>90%</span></div>
+        </div>
+
+        <div class="config-item">
+          <label class="checkbox-label">
+            <input type="checkbox" id="do-scale" checked />
+            Scale numeric features (StandardScaler)
+          </label>
+        </div>
+
+        <div class="config-item">
+          <label class="checkbox-label">
+            <input type="checkbox" id="do-encode" checked />
+            Encode categorical columns
+          </label>
+          <div class="radio-group" id="encode-options">
+            <label class="radio-label">
+              <input type="radio" name="encode-strategy" value="label" checked /> Label Encoding
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="encode-strategy" value="onehot" /> One-Hot Encoding
+            </label>
+          </div>
+        </div>
+
+        <div class="config-item">
+          <label for="random-seed">Random Seed</label>
+          <input type="number" id="random-seed" value="42" min="0" class="seed-input" />
+        </div>
+
+      </div>
+      <button class="btn btn-primary" id="run-btn">Run Cleaning Pipeline</button>
+    </section>
+
+    <!-- Section 3: Log & Progress -->
+    <section class="card hidden" id="section-log">
+      <h2>3. Cleaning Log</h2>
+      <div class="progress-wrap">
+        <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+      </div>
+      <p class="progress-status" id="progress-status">Starting…</p>
+      <div class="log-list" id="log-list"></div>
+    </section>
+
+    <!-- Section 4: Summary & Export -->
+    <section class="card hidden" id="section-export">
+      <h2>4. Summary &amp; Export</h2>
+
+      <div class="summary-grid" id="summary-grid">
+        <div class="stat-box"><div class="stat-val" id="s-orig-rows">—</div><div class="stat-lbl">Original Rows</div></div>
+        <div class="stat-box"><div class="stat-val" id="s-clean-rows">—</div><div class="stat-lbl">Cleaned Rows</div></div>
+        <div class="stat-box"><div class="stat-val" id="s-train-rows">—</div><div class="stat-lbl">Train Rows</div></div>
+        <div class="stat-box"><div class="stat-val" id="s-test-rows">—</div><div class="stat-lbl">Test Rows</div></div>
+        <div class="stat-box"><div class="stat-val" id="s-orig-cols">—</div><div class="stat-lbl">Original Cols</div></div>
+        <div class="stat-box"><div class="stat-val" id="s-clean-cols">—</div><div class="stat-lbl">Cleaned Cols</div></div>
+      </div>
+
+      <h3>Descriptive Statistics</h3>
+      <div class="table-wrap">
+        <table class="stats-table" id="stats-table">
+          <thead><tr id="stats-head"></tr></thead>
+          <tbody id="stats-body"></tbody>
+        </table>
+      </div>
+
+      <h3>Download Files</h3>
+      <div class="download-row">
+        <button class="btn btn-success" id="dl-train" disabled>Download train.csv</button>
+        <button class="btn btn-success" id="dl-test" disabled>Download test.csv</button>
+        <button class="btn btn-secondary" id="dl-cleaned" disabled>Download cleaned.csv</button>
+      </div>
+
+      <button class="btn btn-outline" id="reset-btn">Start Over</button>
+    </section>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
